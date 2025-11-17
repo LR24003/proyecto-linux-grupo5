@@ -182,3 +182,12 @@ servidor-grupo5 → muestra la página web personalizada creada por el grupo
 nginx:latest → muestra la página por defecto de Nginx
 
 Ambos contenedores funcionaron correctamente, demostrando que la imagen avanzada construida por el grupo está activa y operativa.
+
+# 7. Conclusiones
+
+El desarrollo de este proyecto permitió aplicar de manera práctica múltiples conceptos fundamentales de la administración de sistemas Linux. Se implementó la gestión de usuarios y permisos, la automatización de tareas mediante cron, el uso de Git como herramienta de control de versiones y el despliegue de servicios mediante contenedores Docker.
+
+La creación de un servidor web personalizado utilizando Nginx dentro de un contenedor demostró la importancia de la containerización y la modularidad en entornos modernos. A través del Dockerfile personalizado, se integró exitosamente el sitio web del grupo dentro de una imagen propia, la cual funcionó correctamente al compararse con la imagen oficial de Nginx.
+
+En conjunto, el proyecto fortaleció el dominio de herramientas esenciales para la administración de servidores, la automatización de procesos y la gestión eficiente de infraestructura basada en software libre.
+
