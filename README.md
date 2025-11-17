@@ -11,10 +11,140 @@ El proyecto incluye:
 - Despliegue de un servidor web Nginx.
 - Control de versiones con Git y GitHub.
 
+## 1. Configuración de Host, Usuarios, Grupos y Permisos
+
+1.1 Configuración del hostname
+Se asignó un nombre al servidor para identificarlo dentro del entorno del proyecto:
+
+```bash
+sudo hostnamectl set-hostname servidor-grupo5
+```
+1.2 Creación de usuarios
+
+Se crearon los usuarios necesarios según los roles definidos en el proyecto:
+
+```bash
+sudo adduser adminsys
+sudo adduser tecnico
+sudo adduser visitante
+```
+
+1.3 Creación de grupos
+
+Se crearon los grupos que clasifican los permisos del sistema:
+
+```bash
+sudo groupadd soporte
+sudo groupadd web
+```
+Se comprobó su creación revisando el archivo de grupos del sistema:
+```bash
+cat /etc/group
+```
+1.4 Agregar usuarios a grupos
+
+Se asignaron los usuarios a los grupos correspondientes:
+```bash
+sudo usermod -aG sudo adminsys
+sudo usermod -aG soporte tecnico
+sudo usermod -aG web visitante
+getent group soporte
+getent group web
+```
+Explicación:
+
+- En el grupo soporte se agregó el usuario tecnico.
+- En el grupo web se agregó el usuario visitante.
+
+De esta forma cada usuario queda asociado al grupo que le corresponde.
+
+1.5 Creación de estructura de directorios y permisos
+
+1.5.1 Creación del directorio /proyecto
+
+Se creó la estructura base del proyecto con las carpetas solicitadas:
+```bash
+sudo mkdir -p /proyecto/{datos,web,scripts,capturas}
+cd /proyecto
+ls
+```
+Esto genera las carpetas datos, web, scripts y capturas dentro de /proyecto.
+
+1.5.2 Asignación de grupos a directorios
+
+Se asignaron los grupos a los directorios correspondientes:
+```bash
+sudo chown :soporte /proyecto/datos
+sudo chown :web /proyecto/web
+ls -ld /proyecto/datos /proyecto/web
+```
+En el grupo soporte se deja la carpeta datos y en el grupo **webla carpetaweb`.
+
+1.5.3 Configuración de herencia de grupo (setgid)
+
+Para que los nuevos archivos creados dentro de los directorios mantengan el grupo correcto, se activó el bit setgid:
+```bash
+sudo chmod g+s /proyecto/datos
+sudo chmod g+s /proyecto/web
+ls -ld /proyecto/datos /proyecto/web
+```
+Con esto se confirma que la herencia de grupo se aplica correctamente en ambas carpetas.
 
 ## 2. AUTOMATIZACIÓN Y MONITOREO
 
-### 2.2 Automatización con Cron
+2.1 Script de Monitoreo del Sistema
+
+Dentro del directorio de scripts del proyecto se creó el archivo `reporte_sistema.sh` con el siguiente procedimiento:
+
+```bash
+cd /proyecto-linux-grupo5/proyecto/scripts
+nano reporte_sistema.sh
+chmod +x reporte_sistema.sh
+```
+El contenido del script fue el siguiente:
+```bash
+#!/bin/bash
+
+echo "------------- REPORTE DEL SISTEMA -------------"
+
+# 1. Fecha y hora actual
+echo "Fecha y Hora: $(date '+%Y-%m-%d %H:%M:%S')"
+
+# 2. Nombre del host del sistema
+echo "Nombre del Host: $(hostname)"
+
+# 3. Número de usuarios conectados
+echo "Usuarios Conectados: $(who | wc -l)"
+
+# 4. Espacio libre en el disco principal
+echo "Espacio Libre en Disco (/): $(df -h / | tail -n 1 | awk '{print $4}')"
+
+# 5. Memoria RAM disponible
+echo "Memoria RAM Disponible: $(free -h | awk '/Mem/ {print $7}')"
+
+# 6. Número de contenedores Docker activos
+echo "Contenedores Docker Activos: $(docker ps -q | wc -l)"
+
+echo "-----------------------------------------------"
+echo ""
+```
+Explicación:
+El script reporte_sistema.sh utiliza comandos básicos de Linux para obtener estadísticas del sistema:
+
+- date → obtiene la hora actual.
+- hostname → muestra el nombre del servidor.
+- who | wc -l → cuenta los usuarios conectados.
+- df -h / → muestra el uso del disco del directorio raíz.
+- free -h → muestra la memoria RAM disponible.
+- docker ps -q | wc -l → cuenta los contenedores Docker en ejecución.
+
+Al ejecutarlo:
+```bash
+./reporte_sistema.sh
+```
+se genera un informe completo del estado del sistema, utilizado posteriormente por cron para automatizar el monitoreo.
+
+2.2 Automatización con Cron
 
 Se configuró una tarea programada bajo el usuario `adminsys` para ejecutar el script de monitoreo cada 30 minutos, asegurando que la salida se guarde en la ubicación de logs del sistema (`/var/log/proyecto/`).
 
