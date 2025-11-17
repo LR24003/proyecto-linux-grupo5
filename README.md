@@ -172,14 +172,16 @@ Comparación con la imagen oficial de Nginx
 
 Se ejecutó también un contenedor con la imagen oficial de Nginx para comparar:
 ```bash
-sudo docker run -d -p 8082:80 --name nginx-oficial nginx:latest
+sudo docker run -d -p 8080:80 --name nginx-oficial nginx:latest
 ```
 
-Diferencias:
+Diferencias entre el contenedor oficial y el personalizada
 
-servidor-grupo5 → muestra la página web personalizada creada por el grupo
+Aunque ambos usan la misma imagen base (`nginx:latest`), la diferencia principal es:
+- **Contenedor oficial (`nginx-oficial`)**: muestra la página por defecto de Nginx y se ejecutó en el puerto **8080**.
+- **Contenedor personalizado (`servidor-grupo5`)**: sirve el contenido HTML del proyecto (carpeta `web/`) y se ejecutó en el puerto **8081**.
 
-nginx:latest → muestra la página por defecto de Nginx
+La imagen es la misma, solo cambia el contenido servido y el puerto expuesto.
 
 Ambos contenedores funcionaron correctamente, demostrando que la imagen avanzada construida por el grupo está activa y operativa.
 
